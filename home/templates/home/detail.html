@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block page_styles %}
+    <link rel="stylesheet" href="{% static 'home/detail.css' %}">
+{% endblock %}
+
+{% block title %}
+    {{ post.title|truncatewords:10 }}
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="card">
+            <h3 class="card-header"><b>&nbsp;<br>{{ post.title|capfirst }}<br><br></b></h3>
+            <br class="new-hr">
+            <hr/>
+            <p></p>
+            <p><b><a  class="card-header card-header-user" href="{% url 'account:user_profile' post.user.id %}">By: {{ post.user.first_name|capfirst }} {{ post.user.last_name|capfirst }} | {{ post.user.username }}</a></b></p>
+            <p><b class="card-header card-header-user"><i>Moment Likes : {{ post.likes_count }}</i></b></p>
+            {% if request.user.id == post.user.id %}
+                <a href="{% url 'home:post_delete' post.id %}" class="btn btn-danger">Delete</a>
+                <a href="{% url 'home:post_update' post.id %}" class="btn btn-info">Update</a>
+            {% endif %}
+            <hr/>
+
+            <p class="card-body">{{ post.body }}</p>
+            <br>
+            <small class="card-footer">Created at: {{ post.created }} - Updated at: {{ post.updated }}</small>
+        </div>
+        <br><br>
+        <hr/>
+        <br><br>
+
+        {% if request.user.is_authenticated %}
+            <div class="like-section">
+                {% if post_is_like == False %}
+                    <a class="btn btn-like" href="{% url 'home:post_like' post.id %}">Like {{ post.likes_count }}</a>
+                {% elif post_is_like == True %}
+                    <a class="btn btn-unlike" href="{% url 'home:post_unlike' post.id %}">Dislike {{ post.likes_count }}</a>
+                {% endif %}
+            </div>
+
+            <div class="comment-section">
+                <form action="" method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <input class="btn btn-primary" type="submit" value="Send">
+                </form>
+            </div>
+        {% else %}
+            <p class="alert alert-danger">Only Logged In User Can Send Comment !</p>
+        {% endif %}
+
+        <br><br>
+
+        <p><b>Comments: <span>{{ comments.count }}</span></b></p>
+        <div class="comments-container">
+            {% for comment in comments %}
+                <div class="card bg-dark-card">
+                    <p class="card-header">{{ comment.user }} | {{ comment.created|timesince }}</p>
+                    <p class="card-body">{{ comment.body }}</p>
+
+                    {% if request.user.is_authenticated %}
+                        {% if request.user.id == post.user.id %}
+                            <form action="{% url 'home:post_add_reply' post.id comment.id %}" method="post">
+                                {% csrf_token %}
+                                {{ form_reply.as_p }}
+                                <input class="btn btn-success-reply" type="submit" value="Send">
+                            </form>
+                        {% endif %}
+                    {% endif %}
+
+                    {% with replies=comment.rcomments.all %}
+                        {% for reply in replies %}
+                            <p class="bg-primary p-3 m-2">{{ reply.user }} | {{ reply.created|timesince }} <br><br> {{ reply.body }}</p>
+                        {% endfor %}
+                    {% endwith %}
+                </div>
+                <br>
+            {% empty %}
+                <p class="alert alert-danger">There Are No Comments Yet!</p>
+            {% endfor %}
+        </div>
+    </div>
+
+{% endblock %}

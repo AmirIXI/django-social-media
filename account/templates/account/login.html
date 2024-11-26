@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign In User{% endblock %}
+
+{% block content %}
+    <h3><i><b>SIGN IN TO BLOG!</b></i></h3>
+    <p style="font-family: cursive"><b>&nbsp;Welcome <span style="color: red">Back</span></b></p>
+    <br><hr/><br>
+
+    <form class="col-md-6" action="" method="post" novalidate>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <br>
+        <input class="btn btn-success" type="submit" value="Login">
+        <a href="" class="btn btn-warning">Reset Password</a>
+        <a href="{% url 'account:user_register' %}" class="btn btn-info">Sign Up Here</a>
+    </form>
+
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block page_styles %}
+    <link rel="stylesheet" href="{% static 'account/activity.css' %}">
+{% endblock %}
+
+{% block title %}
+Your Activity
+{% endblock %}
+
+{% block content %}
+
+
+<div class="container">
+        <h2>Your Activity</h2>
+
+        <div class="activity-section">
+            <h3>Following:</h3>
+            {% for rel in relation_following %}
+                <p>You are following <span><a href="{% url 'account:user_profile' rel.to_user.id %}">{{ rel.to_user.username }}</a></span></p>
+            {% endfor %}
+
+            <h3>Followers:</h3>
+            {% for rel in relation_followers %}
+                <p><span><a href="{% url 'account:user_profile' rel.from_user.id %}">{{ rel.from_user.username }}</a></span> is following you</p>
+            {% endfor %}
+        </div>
+
+        <div class="activity-section">
+            <h3>Your Liked Posts:</h3>
+            {% for like in post_liked %}
+                <p>You liked the post: <a href="{{ like.post.get_absolute_url }}">{{ like.post.title|truncatewords:10 }}</a></p>
+            {% endfor %}
+        </div>
+
+        <div class="activity-section">
+            <h3>Posts Liked by Others:</h3>
+            {% for liked_post in post %}
+                {% for pvote in liked_post.pvotes.all %}
+                    <p><span><a href="{% url 'account:user_profile' pvote.user.id %}">{{ pvote.user }}</a></span> liked your post: <span><a href="{{ liked_post.get_absolute_url }}">{{ pvote.post.title|truncatewords:10 }}</a></span></p>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+
+{% endblock %}

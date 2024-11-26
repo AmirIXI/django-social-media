@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block page_styles %}
+    <link rel="stylesheet" href="{% static 'home/new_home.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="content-container">
+        <section class="welcome-section">
+            <h1>Welcome to Our Blog!</h1>
+            <p>Explore and Share Your Moments</p>
+            <hr>
+        </section>
+
+        <section class="search-section">
+            <form action="" method="get" class="search-form">
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-info">Search</button>
+            </form>
+        </section>
+        <br><br>
+
+        <section class="post-section">
+            {% for post in posts %}
+                <div class="blog-post">
+                    <h2 class="post-title"><a class="kos" href="{{ post.get_absolute_url }}">{{ post.title }}</a></h2>
+                    <hr>
+                    <p class="post-body">{{ post.body|truncatewords:20 }}</p>
+                    <br>
+                    <div class="post-meta">
+                        <p class="author">By : <a href="{% url 'account:user_profile' post.user.id %}">{{ post.user.username|capfirst }}</a></p>
+                        <p class="timestamp">{{ post.created|timesince }} ago</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </section>
+    </div>
+{% endblock %}
